@@ -1,6 +1,7 @@
 # KnowledgeTracker
 
-Uma aplicação moderna e multiplataforma para gestão de conhecimento, desenvolvida em .NET MAUI. Organize, acompanhe e consulte soluções técnicas, excertos de código e notas de aprendizagem, com uma interface elegante e adaptável ao tema claro/escuro. Compatível com computadores (Windows, macOS) e dispositivos móveis (Android, iOS).
+Uma aplicação para gestão de conhecimento, desenvolvida em .NET MAUI, **exclusiva para computadores desktop** (Windows e macOS). Organize, acompanhe e consulte soluções técnicas, excertos de código e notas de aprendizagem, com uma interface adaptável ao tema claro/escuro.
+
 
 ---
 
@@ -77,6 +78,10 @@ Contribuições são bem-vindas!
 ## 📄 Licença
 
 Este projeto está licenciado sob a Licença MIT.
+
+## 💡 Créditos
+
+Desenvolvido com [CommunityToolkit.Mvvm](https://learn.microsoft.com/en-us/dotnet/communitytoolkit/mvvm/introduction), .NET MAUI e dedicação à partilha de conhecimento.
 
 ---
 
