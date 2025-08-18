@@ -38,9 +38,7 @@ git clone https://github.com/fauxtix/KnowledgeTracker.git cd KnowledgeTracker
 - **Adicionar Registo:** Preencha o formulário e clique em "Adicionar".
 - **Editar Registo:** Selecione um registo, altere os campos e clique em "Atualizar".
 - **Eliminar Registo:** Selecione um registo e clique em "Eliminar".
-- **Pesquisar:** Utilize a barra de pesquisa para filtrar registos.
-
- **Visualizar vídeos do YouTube:**
+- **Pesquisar:** Utilize a barra de pesquisa para filtrar registos. **Visualizar vídeos do YouTube:**
   1. Cole o URL de um vídeo do YouTube no campo "URL do vídeo do YouTube".
   2. Clique em "Exibir Vídeo" para assistir ao vídeo diretamente na aplicação.
   3. Clique em "Ver no YouTube" para abrir o vídeo no navegador.
