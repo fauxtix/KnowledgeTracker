@@ -52,15 +52,6 @@ git clone https://github.com/yourusername/KnowledgeTracker.git cd KnowledgeTrack
 
 ---
 
-## 📦 Project Structure
-KnowledgeTracker/ 
-   ├── Resources/ │   
-   ├── Images/                
-   # App icons (sun.png, moon.png, etc.) │   
-   └── Themes/                # LightTheme.xaml, DarkTheme.xaml ├── Models/                    # Data models ├── ViewModels/                # MVVM logic ├── Data/                      # Data access and interfaces ├── MainPage.xaml              # Main UI ├── App.xaml                   # Application resources and startup ├── Program.cs                 # MAUI app entry point └── ...
-
----
-
 ## 🧩 Customization
 
 - **Themes:** Edit `Resources/Themes/LightTheme.xaml` and `DarkTheme.xaml` for colors and styles.
