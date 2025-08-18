@@ -1,6 +1,6 @@
 # KnowledgeTracker
 
-A modern, cross-platform knowledge management app built with .NET MAUI. Track, organize, and revisit your technical solutions, code snippets, and learning notes with a beautiful, theme-aware interface.
+A modern, cross-platform knowledge management app built with .NET MAUI. Track, organize, and revisit your technical solutions, code snippets, and learning notes with a beautiful, theme-aware interface. Runs on desktop (Windows, macOS) and mobile (Android, iOS).
 
 ---
 
