@@ -7,12 +7,11 @@ Uma aplicação para gestão de conhecimento, desenvolvida em .NET MAUI, **exclu
 
 ## 🚀 Funcionalidades
 
-- Adicionar, editar, eliminar e pesquisar registos de conhecimento
+- Adicionar, editar, eliminar e pesquisar
 - Alternância entre tema claro e escuro com ícone dinâmico (sol/lua)
-- **Visualização de vídeos do YouTube na aplicação:** insira o URL de um vídeo e assista sem sair da aplicação, ou abra no navegador
-- Interface multilingue (Português, English)
+- **Visualização de vídeos do YouTube na aplicação:
+ ** insira o URL de um vídeo e assista sem sair da aplicação, ou abra no navegador
 - Validação e apresentação de erros
-- Layout responsivo para computador e dispositivos móveis
 - Estilos personalizáveis através de ficheiros XAML de temas
 
 ---
@@ -29,16 +28,7 @@ Uma aplicação para gestão de conhecimento, desenvolvida em .NET MAUI, **exclu
 1. **Clone o repositório:**
 git clone https://github.com/fauxtix/KnowledgeTracker.git cd KnowledgeTracker
 
-
-2. **Abra a solução no Visual Studio.**
-
-3. **Restaure os pacotes NuGet.**
-
-4. **Adicione os ícones de tema:**
-   - Coloque `moon.png` e `sun.png` em `Resources/Images/`
-   - Defina o Build Action como `MauiImage`
-
-5. **Compile e execute o projeto.**
+2. **Compile e execute o projeto.**
 
 ---
 
@@ -49,7 +39,8 @@ git clone https://github.com/fauxtix/KnowledgeTracker.git cd KnowledgeTracker
 - **Editar Registo:** Selecione um registo, altere os campos e clique em "Atualizar".
 - **Eliminar Registo:** Selecione um registo e clique em "Eliminar".
 - **Pesquisar:** Utilize a barra de pesquisa para filtrar registos.
-- **Visualizar vídeos do YouTube:**
+
+ **Visualizar vídeos do YouTube:**
   1. Cole o URL de um vídeo do YouTube no campo "URL do vídeo do YouTube".
   2. Clique em "Exibir Vídeo" para assistir ao vídeo diretamente na aplicação.
   3. Clique em "Ver no YouTube" para abrir o vídeo no navegador.
