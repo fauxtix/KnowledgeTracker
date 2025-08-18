@@ -78,13 +78,3 @@ Contribuições são bem-vindas!
 ## 📄 Licença
 
 Este projeto está licenciado sob a Licença MIT.
-
-## 💡 Créditos
-
-Desenvolvido com [CommunityToolkit.Mvvm](https://learn.microsoft.com/en-us/dotnet/communitytoolkit/mvvm/introduction), .NET MAUI e dedicação à partilha de conhecimento.
-
----
-
-## 💡 Créditos
-
-Desenvolvido com [CommunityToolkit.Mvvm](https://learn.microsoft.com/en-us/dotnet/communitytoolkit/mvvm/introduction), .NET MAUI e dedicação à partilha de conhecimento.
