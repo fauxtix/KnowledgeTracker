@@ -1,82 +1,83 @@
 # KnowledgeTracker
 
-A modern, cross-platform knowledge management app built with .NET MAUI. Track, organize, and revisit your technical solutions, code snippets, and learning notes with a beautiful, theme-aware interface. Runs on desktop (Windows, macOS) and mobile (Android, iOS).
+Uma aplicação moderna e multiplataforma para gestão de conhecimento, desenvolvida com .NET MAUI. Organize, acompanhe e consulte soluções técnicas, excertos de código e notas de aprendizagem, com uma interface elegante e adaptável ao tema claro/escuro. Compatível com desktop (Windows, macOS) e dispositivos móveis (Android, iOS).
 
 ---
 
-## 🚀 Features
+## 🚀 Funcionalidades
 
-- Add, edit, delete, and search knowledge entries
-- Light & dark theme switching with dynamic sun/moon icon
-- YouTube video embedding and browser launching
-- Multi-language UI (Português, English)
-- Validation & error feedback
-- Responsive layout for desktop and mobile
-- Customizable styles via XAML theme files
+- Adicionar, editar, eliminar e pesquisar registos de conhecimento
+- Alternância entre tema claro e escuro com ícone dinâmico (sol/lua)
+- Incorporação de vídeos do YouTube e abertura no navegador
+- Interface multilingue (Português, English)
+- Validação e feedback de erros
+- Layout responsivo para desktop e dispositivos móveis
+- Estilos personalizáveis via ficheiros XAML de temas
 
 ---
 
-## 🛠️ Getting Started
+## 🛠️ Primeiros Passos
 
-### Prerequisites
+### Pré-requisitos
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) with .NET MAUI workload
+- [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) com workload .NET MAUI
 
-### Setup
+### Instalação
 
-1. **Clone the repository:**
-git clone https://github.com/yourusername/KnowledgeTracker.git cd KnowledgeTracker
+1. **Clone o repositório:**
+git clone https://github.com/seuutilizador/KnowledgeTracker.git cd KnowledgeTracker
 
 
-2. **Open the solution in Visual Studio.**
+2. **Abra a solução no Visual Studio.**
 
-3. **Restore NuGet packages.**
+3. **Restaure os pacotes NuGet.**
 
-4. **Add theme icons:**
-   - Place `moon.png` and `sun.png` in `Resources/Images/`
-   - Set their Build Action to `MauiImage`
+4. **Adicione os ícones de tema:**
+   - Coloque `moon.png` e `sun.png` em `Resources/Images/`
+   - Defina o Build Action como `MauiImage`
 
-5. **Build and run the project.**
-
----
-
-## ✨ Usage
-
-- **Switch Theme:** Tap the sun/moon icon in the header.
-- **Add Entry:** Fill out the form and click "Adicionar".
-- **Edit Entry:** Select an entry, update fields, and click "Atualizar".
-- **Delete Entry:** Select an entry and click "Excluir".
-- **Search:** Use the search bar to filter entries.
-- **YouTube Integration:** Paste a YouTube URL and use the buttons to embed or open the video.
+5. **Compile e execute o projeto.**
 
 ---
 
-## 🧩 Customization
+## ✨ Utilização
 
-- **Themes:** Edit `Resources/Themes/LightTheme.xaml` and `DarkTheme.xaml` for colors and styles.
-- **Icons:** Replace `moon.png` and `sun.png` in `Resources/Images/` for custom theme icons.
-- **Languages:** Add more languages to `IdiomasSuportados` in the ViewModel.
+- **Alternar Tema:** Clique no ícone de sol/lua no topo da aplicação.
+- **Adicionar Registo:** Preencha o formulário e clique em "Adicionar".
+- **Editar Registo:** Selecione um registo, altere os campos e clique em "Atualizar".
+- **Eliminar Registo:** Selecione um registo e clique em "Eliminar".
+- **Pesquisar:** Utilize a barra de pesquisa para filtrar registos.
+- **YouTube:** Cole um URL do YouTube e utilize os botões para incorporar ou abrir o vídeo.
 
----
-
-## 🤝 Contributing
-
-Contributions are welcome!  
-- Fork the repo
-- Create your feature branch (`git checkout -b feature/AmazingFeature`)
-- Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-- Push to the branch (`git push origin feature/AmazingFeature`)
-- Open a Pull Request
 
 ---
 
-## 📄 License
+## 🧩 Personalização
 
-This project is licensed under the MIT License.
+- **Temas:** Edite `Resources/Themes/LightTheme.xaml` e `DarkTheme.xaml` para cores e estilos.
+- **Ícones:** Substitua `moon.png` e `sun.png` em `Resources/Images/` por ícones personalizados.
+- **Idiomas:** Adicione mais idiomas em `IdiomasSuportados` no ViewModel.
 
 ---
 
-## 💡 Credits
+## 🤝 Contribuir
 
-Built with [CommunityToolkit.Mvvm](https://learn.microsoft.com/en-us/dotnet/communitytoolkit/mvvm/introduction), .NET MAUI, and a passion for knowledge sharing.
+Contribuições são bem-vindas!  
+- Faça fork do repositório
+- Crie uma branch de funcionalidade (`git checkout -b feature/NovaFuncionalidade`)
+- Faça commit das alterações (`git commit -m 'Adicionar nova funcionalidade'`)
+- Faça push para a branch (`git push origin feature/NovaFuncionalidade`)
+- Abra um Pull Request
+
+---
+
+## 📄 Licença
+
+Este projeto está licenciado sob a Licença MIT.
+
+---
+
+## 💡 Créditos
+
+Desenvolvido com [CommunityToolkit.Mvvm](https://learn.microsoft.com/en-us/dotnet/communitytoolkit/mvvm/introduction), .NET MAUI e paixão pela partilha de conhecimento.
