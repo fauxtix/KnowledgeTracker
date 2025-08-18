@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    x:Class="KnowledgeTracker.Resources.Themes.DarkTheme">
+
+    <!-- Colors -->
+    <Color x:Key="PageBackgroundColor">#181A20</Color>
+    <Color x:Key="StackBackgroundColor">#36454F</Color>
+    <Color x:Key="FrameBackgroundColor">#36454F</Color>
+    <Color x:Key="LabelTextColor">#F8F8F2</Color>
+    <Color x:Key="AccentColor">#50FA7B</Color>
+    <Color x:Key="ErrorBackgroundColor">#FF5555</Color>
+    <Color x:Key="ErrorTextColor">#181A20</Color>
+    <Color x:Key="DatePickerBackgroundColor">#23262F</Color>
+    <Color x:Key="DatePickerTextColor">#F8F8F2</Color>
+
+    <!-- Styles -->
+    <Style x:Key="ButtonStyle" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{DynamicResource AccentColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource LabelTextColor}" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="HeightRequest" Value="40" />
+        <Setter Property="WidthRequest" Value="140" />
+        <Setter Property="Margin" Value="0,0,5,0" />
+        <Style.Triggers>
+            <Trigger TargetType="Button" Property="IsEnabled" Value="False">
+                <Setter Property="BackgroundColor" Value="#E0E0E0" />
+                <Setter Property="TextColor" Value="#A0A0A0" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="ButtonNovoStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+        <Setter Property="BackgroundColor" Value="#44475A" />
+    </Style>
+    <Style x:Key="ButtonAdicionarStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+        <Setter Property="BackgroundColor" Value="#50FA7B" />
+        <Setter Property="TextColor" Value="#181A20" />
+    </Style>
+    <Style x:Key="ButtonAtualizarStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+        <Setter Property="BackgroundColor" Value="#FFB86C" />
+        <Setter Property="TextColor" Value="#181A20" />
+    </Style>
+    <Style x:Key="ButtonExcluirStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+        <Setter Property="BackgroundColor" Value="#FF5555" />
+        <Setter Property="TextColor" Value="#181A20" />
+    </Style>
+    <Style x:Key="EntryStyle" TargetType="Entry">
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="Margin" Value="0,5" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource FrameBackgroundColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource LabelTextColor}" />
+        <Setter Property="HeightRequest" Value="40" />
+        <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+        <Setter Property="VerticalOptions" Value="Center" />
+    </Style>
+    <Style x:Key="EditorStyle" TargetType="Editor">
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="Margin" Value="0,5" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource FrameBackgroundColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource LabelTextColor}" />
+        <Setter Property="HeightRequest" Value="80" />
+        <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+        <Setter Property="VerticalOptions" Value="Center" />
+    </Style>
+    <Style x:Key="CodeEditorStyle" TargetType="Editor">
+        <Setter Property="FontFamily" Value="CodeFont" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource FrameBackgroundColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource LabelTextColor}" />
+        <Setter Property="AutoSize" Value="TextChanges" />
+        <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+        <Setter Property="VerticalOptions" Value="Start" />
+        <Setter Property="Margin" Value="0,5" />
+    </Style>
+    
+</ResourceDictionary>

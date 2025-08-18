@@ -1,0 +1,16 @@
+﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:KnowledgeTracker.Converters"
+             x:Class="KnowledgeTracker.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <local:NullToBoolConverter x:Key="NullToBoolConverter" />
+            <local:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter" />
+            <local:NullableDateTimeToDateTimeConverter x:Key="NullableDateTimeToDateTimeConverter" />
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Themes/LightTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
