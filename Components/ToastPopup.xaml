@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    x:Class="KnowledgeTracker.Components.ToastPopup">
+    <Grid Padding="0" VerticalOptions="End" HorizontalOptions="Center">
+        <Frame x:Name="ToastFrame"
+       BackgroundColor="Black"
+       Padding="16,8"
+       CornerRadius="16"
+       HasShadow="True"
+       VerticalOptions="End"
+       HorizontalOptions="Center">
+            <Label x:Name="MessageLabel"
+           TextColor="White"
+           FontSize="16"
+           HorizontalTextAlignment="Center"
+           VerticalTextAlignment="Center" />
+        </Frame>
+    </Grid>
+</toolkit:Popup>

@@ -3,7 +3,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                     x:Class="KnowledgeTracker.Resources.Themes.DarkTheme">
 
-    <!-- Colors -->
     <Color x:Key="PageBackgroundColor">#181A20</Color>
     <Color x:Key="StackBackgroundColor">#36454F</Color>
     <Color x:Key="FrameBackgroundColor">#36454F</Color>
@@ -14,7 +13,6 @@
     <Color x:Key="DatePickerBackgroundColor">#23262F</Color>
     <Color x:Key="DatePickerTextColor">#F8F8F2</Color>
 
-    <!-- Styles -->
     <Style x:Key="ButtonStyle" TargetType="Button">
         <Setter Property="BackgroundColor" Value="{DynamicResource AccentColor}" />
         <Setter Property="TextColor" Value="{DynamicResource LabelTextColor}" />

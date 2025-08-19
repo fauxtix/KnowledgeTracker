@@ -1,6 +1,7 @@
 ﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:KnowledgeTracker.Converters"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="KnowledgeTracker.MainPage"
              Title="Knowledge Tracker"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
@@ -149,7 +150,6 @@
             <HorizontalStackLayout Grid.Row="1" Spacing="10" HorizontalOptions="Center" Margin="0,20,0,0">
                 <Button Text="Limpar"
                         Command="{Binding NewEntryCommand}"
-                        IsEnabled="{Binding SelectedEntry.Id, Converter={StaticResource GreaterThanZeroConverter}, ConverterParameter=invert}"
                         Style="{StaticResource ButtonNovoStyle}"
                         ImageSource="clear.png"
                         ContentLayout="Left,10" />

@@ -1,4 +1,7 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using KnowledgeTracker.Data.Interfaces;
 using KnowledgeTracker.Models;
@@ -174,7 +177,7 @@ namespace KnowledgeTracker.ViewModels
 
             SelectedEntry = new KnowledgeEntry();
             ClearFields();
-            ShowMessage?.Invoke("Sucesso", "Entrada criada com sucesso!");
+            await ShowNotificationAsync("Sucesso", "Entrada criada com sucesso!", NotificationType.Info);
         }
 
         [RelayCommand]
@@ -190,8 +193,7 @@ namespace KnowledgeTracker.ViewModels
             await LoadAllAsync();
 
             SelectedEntry = updatedEntry;
-
-            ShowMessage?.Invoke("Sucesso", "Entrada atualizada com sucesso!");
+            await ShowNotificationAsync("Sucesso", "Entrada atualizada com sucesso!", NotificationType.Info, ToastDuration.Short);
         }
 
         [RelayCommand]
@@ -203,8 +205,7 @@ namespace KnowledgeTracker.ViewModels
                 Entries.Remove(SelectedEntry);
 
             SelectedEntry = new KnowledgeEntry();
-
-            ShowMessage?.Invoke("Sucesso", "Entrada removida com sucesso!");
+            await ShowNotificationAsync("Sucesso", "Entrada removida com sucesso!", NotificationType.Info);
         }
 
         [RelayCommand]
@@ -232,6 +233,10 @@ namespace KnowledgeTracker.ViewModels
             bool isValid = Validator.TryValidateObject(entryToValidate, context, results, true);
             if (!isValid)
                 errors.AddRange(results.Select(r => r.ErrorMessage ?? "Erro desconhecido"));
+
+            // Additional YouTube URL validation
+            if (!string.IsNullOrWhiteSpace(entryToValidate.YouTubeUrl) && !IsValidUrl(entryToValidate.YouTubeUrl))
+                errors.Add("A URL do YouTube é inválida.");
 
             ValidationErrors.Clear();
             foreach (var error in errors)
@@ -274,8 +279,17 @@ namespace KnowledgeTracker.ViewModels
             ValidationErrors.Clear();
         }
 
+        // --- URL Validation Helper ---
+        private bool IsValidUrl(string? url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                return false;
+            return Uri.TryCreate(url, UriKind.Absolute, out var uriResult)
+                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+        }
+
         [RelayCommand]
-        public void ShowYouTubeVideo()
+        public async Task ShowYouTubeVideo()
         {
             // Usa o campo do modelo
             var url = SelectedEntry?.YouTubeUrl;
@@ -283,7 +297,7 @@ namespace KnowledgeTracker.ViewModels
 
             if (string.IsNullOrWhiteSpace(url))
             {
-                ShowMessage?.Invoke("Aviso", "URL deve ser informada.");
+                await ShowNotificationAsync("Aviso", "URL deve ser informada.", NotificationType.Warning);
                 YouTubeHtmlSource = null;
                 IsYouTubeVisible = false;
                 return;
@@ -307,7 +321,8 @@ namespace KnowledgeTracker.ViewModels
                 YouTubeHtmlSource = null;
                 IsYouTubeVisible = false;
                 if (!string.IsNullOrWhiteSpace(url))
-                    ShowMessage?.Invoke("Aviso", "URL inválida do YouTube.");
+                    await ShowNotificationAsync("Aviso", "URL inválida do YouTube.", NotificationType.Warning);
+                return;
             }
         }
         private string? ExtractYouTubeId(string? url)
@@ -326,13 +341,13 @@ namespace KnowledgeTracker.ViewModels
 
             if (string.IsNullOrWhiteSpace(url))
             {
-                ShowMessage?.Invoke("Aviso", "Url deve ser informada.");
+                await ShowNotificationAsync("Aviso", "Url deve ser informada.", NotificationType.Warning);
                 return;
             }
 
             if (string.IsNullOrEmpty(videoId))
             {
-                ShowMessage?.Invoke("Aviso", "URL inválida do YouTube.");
+                await ShowNotificationAsync("Aviso", "Url deve ser informada.", NotificationType.Warning);
                 return;
             }
 
@@ -342,38 +357,9 @@ namespace KnowledgeTracker.ViewModels
             }
             catch (Exception)
             {
-                ShowMessage?.Invoke("Erro", "Não foi possível abrir o link.");
+                await ShowNotificationAsync("Erro", "Não foi possível abrir o link", NotificationType.Error, ToastDuration.Long);
             }
         }
-
-        //[RelayCommand]
-        //public void ToggleTheme()
-        //{
-        //    var app = Application.Current;
-        //    if (app?.Resources?.MergedDictionaries == null)
-        //        return;
-
-        //    var mergedDictionaries = app.Resources.MergedDictionaries;
-
-        //    // Remove any currently merged theme dictionary (Light or Dark)
-        //    var themeDicts = mergedDictionaries
-        //        .Where(d => d.GetType().Name.Contains("Theme"))
-        //        .ToList();
-        //    foreach (var dict in themeDicts)
-        //        mergedDictionaries.Remove(dict);
-
-        //    // Add the new theme dictionary
-        //    if (app.UserAppTheme == AppTheme.Dark)
-        //    {
-        //        mergedDictionaries.Add(new KnowledgeTracker.Resources.Themes.LightTheme());
-        //        app.UserAppTheme = AppTheme.Light;
-        //    }
-        //    else
-        //    {
-        //        mergedDictionaries.Add(new KnowledgeTracker.Resources.Themes.DarkTheme());
-        //        app.UserAppTheme = AppTheme.Dark;
-        //    }
-        //}
 
         [RelayCommand]
         public void ToggleTheme()
@@ -396,6 +382,42 @@ namespace KnowledgeTracker.ViewModels
                 app.UserAppTheme = AppTheme.Dark;
             }
             OnPropertyChanged(nameof(ThemeSwitchIcon));
+        }
+
+        public async Task ShowNotificationAsync(string title, string message, NotificationType type = NotificationType.Info, ToastDuration duration = ToastDuration.Short)
+        {
+            string prefix = type switch
+            {
+                NotificationType.Info => "ℹ️ ",
+                NotificationType.Warning => "⚠️ ",
+                NotificationType.Error => "❌ ",
+                _ => ""
+            };
+
+            var toastMessage = string.IsNullOrWhiteSpace(title) ? $"{prefix}{message}" : $"{prefix}{title}: {message}";
+
+            if (DeviceInfo.Platform == DevicePlatform.WinUI)
+            {
+                // Pass type and duration (in seconds)
+                Application.Current?.MainPage?.ShowPopup(
+                    new Components.ToastPopup(
+                        toastMessage,
+                        type,
+                        duration == ToastDuration.Long ? 4 : 1
+                    )
+                );
+            }
+            else
+            {
+                var toast = Toast.Make(toastMessage, duration);
+                await toast.Show();
+            }
+        }
+        public enum NotificationType
+        {
+            Info,
+            Warning,
+            Error
         }
     }
 }

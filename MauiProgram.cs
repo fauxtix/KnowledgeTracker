@@ -1,4 +1,5 @@
-﻿using KnowledgeTracker.Data.Implementations;
+﻿using CommunityToolkit.Maui;
+using KnowledgeTracker.Data.Implementations;
 using KnowledgeTracker.Data.Interfaces;
 using KnowledgeTracker.Services;
 using KnowledgeTracker.ViewModels;
@@ -16,6 +17,7 @@ namespace KnowledgeTracker
             Batteries_V2.Init();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
