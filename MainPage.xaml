@@ -3,6 +3,7 @@
              xmlns:local="clr-namespace:KnowledgeTracker.Converters"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="KnowledgeTracker.MainPage"
+             x:Name="RootPage"
              Title="Knowledge Tracker"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
@@ -144,6 +145,28 @@
                                  Format="dd/MM/yyyy"
                                  TextColor="{DynamicResource DatePickerTextColor}"
                                  BackgroundColor="{DynamicResource DatePickerBackgroundColor}" />
+
+                    <!-- ... other UI code ... -->
+
+                    <Label Text="Anexos" FontAttributes="Bold" TextColor="{DynamicResource LabelTextColor}" />
+                    <CollectionView ItemsSource="{Binding SelectedEntry.Attachments}" Margin="0,10,0,0">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <HorizontalStackLayout Spacing="10">
+                                    <Label Text="{Binding FileName}" VerticalOptions="Center" />
+                                    <Button Text="Abrir"
+                        Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenAttachmentCommand}"
+                        CommandParameter="{Binding .}" />
+                                    <Button Text="Remover"
+                        Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.RemoveAttachmentCommand}"
+                        CommandParameter="{Binding .}" />
+                                </HorizontalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Button Text="Adicionar Anexo"
+                        Command="{Binding AddAttachmentCommand}"
+                        Style="{StaticResource ButtonStyle}" />
                 </VerticalStackLayout>
             </ScrollView>
 

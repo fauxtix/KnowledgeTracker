@@ -21,6 +21,7 @@ namespace KnowledgeTracker.ViewModels
             _ = LoadAllAsync();
             SelectedEntry = new KnowledgeEntry();
             SelectedEntry.DateResolved = DateTime.Today;
+            Attachments = new ObservableCollection<AttachmentInfo>();
         }
 
         public Action<string, string>? ShowMessage { get; set; }
@@ -77,7 +78,10 @@ namespace KnowledgeTracker.ViewModels
         [ObservableProperty]
         private bool isYouTubeVisible;
 
-        // Change the declaration of selectedEntry to nullable to fix CS8618
+        // MVVM Toolkit: Attachments property for UI binding
+        [ObservableProperty]
+        private ObservableCollection<AttachmentInfo> attachments = new();
+
         private KnowledgeEntry? selectedEntry;
         public KnowledgeEntry? SelectedEntry
         {
@@ -98,12 +102,15 @@ namespace KnowledgeTracker.ViewModels
                         Tags = selectedEntry.Tags;
                         Comments = selectedEntry.Comments;
                         YouTubeUrl = selectedEntry.YouTubeUrl;
+
+                        // Sync Attachments for UI binding
+                        Attachments = new ObservableCollection<AttachmentInfo>(selectedEntry.Attachments ?? new List<AttachmentInfo>());
                     }
                     else
                     {
                         ClearFields();
+                        Attachments = new ObservableCollection<AttachmentInfo>();
                     }
-                    // Always hide the WebView when a new record is selected
                     IsYouTubeVisible = false;
                     YouTubeHtmlSource = null;
                 }
@@ -142,7 +149,8 @@ namespace KnowledgeTracker.ViewModels
                 Technologies = Technologies ?? string.Empty,
                 Tags = Tags ?? string.Empty,
                 Comments = Comments ?? string.Empty,
-                YouTubeUrl = SelectedEntry?.YouTubeUrl
+                YouTubeUrl = SelectedEntry?.YouTubeUrl,
+                Attachments = Attachments.ToList()
             };
         }
 
@@ -175,8 +183,19 @@ namespace KnowledgeTracker.ViewModels
             newEntry.Id = newId;
             Entries.Add(newEntry);
 
+            // Now save attachments with the correct FK
+            if (Attachments.Count > 0)
+            {
+                foreach (var attachment in Attachments)
+                {
+                    attachment.KnowledgeEntryId = newId;
+                    await _service.AddAttachmentAsync(newId, attachment);
+                }
+            }
+
             SelectedEntry = new KnowledgeEntry();
             ClearFields();
+            Attachments = new ObservableCollection<AttachmentInfo>();
             await ShowNotificationAsync("Sucesso", "Entrada criada com sucesso!", NotificationType.Info);
         }
 
@@ -190,8 +209,26 @@ namespace KnowledgeTracker.ViewModels
 
             var updatedEntry = CreateEntryFromFields();
             await _service.UpdateAsync(updatedEntry);
-            await LoadAllAsync();
 
+            // Update attachments: remove all and re-add current list
+            var existingAttachments = await _service.GetAttachmentsAsync(updatedEntry.Id);
+            foreach (var attachment in existingAttachments)
+            {
+                await _service.RemoveAttachmentAsync(attachment.Id);
+                if (File.Exists(attachment.FilePath))
+                    File.Delete(attachment.FilePath);
+            }
+
+            if (Attachments.Count > 0)
+            {
+                foreach (var attachment in Attachments)
+                {
+                    attachment.KnowledgeEntryId = updatedEntry.Id;
+                    await _service.AddAttachmentAsync(updatedEntry.Id, attachment);
+                }
+            }
+
+            await LoadAllAsync();
             SelectedEntry = updatedEntry;
             await ShowNotificationAsync("Sucesso", "Entrada atualizada com sucesso!", NotificationType.Info, ToastDuration.Short);
         }
@@ -200,20 +237,31 @@ namespace KnowledgeTracker.ViewModels
         public async Task DeleteAsync()
         {
             if (Id == 0) return;
+
+            // Remove all attachments for this entry
+            var attachments = await _service.GetAttachmentsAsync(Id);
+            foreach (var attachment in attachments)
+            {
+                await _service.RemoveAttachmentAsync(attachment.Id);
+                if (File.Exists(attachment.FilePath))
+                    File.Delete(attachment.FilePath);
+            }
+
             await _service.DeleteAsync(Id);
             if (SelectedEntry != null)
                 Entries.Remove(SelectedEntry);
 
             SelectedEntry = new KnowledgeEntry();
+            Attachments = new ObservableCollection<AttachmentInfo>();
             await ShowNotificationAsync("Sucesso", "Entrada removida com sucesso!", NotificationType.Info);
         }
-
         [RelayCommand]
         public void NewEntry()
         {
             SelectedEntry = new KnowledgeEntry();
             SelectedEntry.DateResolved = DateTime.Today;
             SyncFieldsFromSelectedEntry();
+            Attachments = new ObservableCollection<AttachmentInfo>();
         }
 
         [RelayCommand]
@@ -293,7 +341,6 @@ namespace KnowledgeTracker.ViewModels
         [RelayCommand]
         public async Task ShowYouTubeVideo()
         {
-            // Usa o campo do modelo
             var url = SelectedEntry?.YouTubeUrl;
             var videoId = ExtractYouTubeId(url);
 
@@ -364,6 +411,76 @@ namespace KnowledgeTracker.ViewModels
         }
 
         [RelayCommand]
+        public async Task AddAttachmentAsync()
+        {
+            var result = await FilePicker.Default.PickAsync(new PickOptions
+            {
+                PickerTitle = "Selecione um arquivo para anexar"
+            });
+
+            if (result == null || string.IsNullOrWhiteSpace(result.FileName))
+            {
+                await ShowNotificationAsync("Erro", "Nenhum arquivo selecionado.", NotificationType.Error);
+                return;
+            }
+
+            var fileName = Path.GetFileName(result.FileName);
+            if (string.IsNullOrWhiteSpace(fileName) || fileName == "..." || fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+            {
+                await ShowNotificationAsync("Erro", "Nome de arquivo inválido.", NotificationType.Error);
+                return;
+            }
+
+            var localPath = Path.Combine(FileSystem.AppDataDirectory, fileName);
+
+            try
+            {
+                using var stream = await result.OpenReadAsync();
+                using var fileStream = new FileStream(localPath, FileMode.Create, FileAccess.Write, FileShare.None);
+                byte[] buffer = new byte[81920];
+                int bytesRead;
+                while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                {
+                    await fileStream.WriteAsync(buffer, 0, bytesRead);
+                }
+            }
+            catch (Exception ex)
+            {
+                await ShowNotificationAsync("Erro", $"Falha ao salvar o arquivo: {ex.Message}", NotificationType.Error);
+                return;
+            }
+
+            var attachment = new AttachmentInfo
+            {
+                FileName = fileName,
+                FilePath = localPath,
+                DateAdded = DateTime.Now,
+                KnowledgeEntryId = 0 // Not set yet!
+            };
+
+            Attachments.Add(attachment);
+            SelectedEntry?.Attachments.Add(attachment);
+        }
+
+        [RelayCommand]
+        public async Task OpenAttachmentAsync(AttachmentInfo attachment)
+        {
+            if (attachment != null && File.Exists(attachment.FilePath))
+                await Launcher.OpenAsync(new OpenFileRequest { File = new ReadOnlyFile(attachment.FilePath) });
+        }
+
+        [RelayCommand]
+        public async Task RemoveAttachmentAsync(AttachmentInfo attachment)
+        {
+            if (attachment != null && SelectedEntry != null)
+            {
+                await _service.RemoveAttachmentAsync(attachment.Id);
+                Attachments.Remove(attachment);
+                SelectedEntry.Attachments.Remove(attachment);
+            }
+        }
+
+        [RelayCommand]
         public void ToggleTheme()
         {
             var app = Application.Current;
@@ -377,15 +494,16 @@ namespace KnowledgeTracker.ViewModels
             {
                 mergedDictionaries.Add(new Resources.Themes.LightTheme());
                 app.UserAppTheme = AppTheme.Light;
+                Preferences.Default.Set("AppTheme", "Light");
             }
             else
             {
                 mergedDictionaries.Add(new Resources.Themes.DarkTheme());
                 app.UserAppTheme = AppTheme.Dark;
+                Preferences.Default.Set("AppTheme", "Dark");
             }
             OnPropertyChanged(nameof(ThemeSwitchIcon));
         }
-
         public async Task ShowNotificationAsync(string title, string message, NotificationType type = NotificationType.Info, ToastDuration duration = ToastDuration.Short)
         {
             string prefix = type switch

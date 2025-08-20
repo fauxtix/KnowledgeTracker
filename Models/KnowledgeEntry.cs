@@ -32,6 +32,9 @@ namespace KnowledgeTracker.Models
         public string Comments { get; set; } = string.Empty;
 
         public string? YouTubeUrl { get; set; }
+
+        [Ignore]
+        public List<AttachmentInfo> Attachments { get; set; } = new();
         public static ValidationResult? ValidateDateResolved(DateTime date, ValidationContext context)
         {
             if (date.Year < 1990)

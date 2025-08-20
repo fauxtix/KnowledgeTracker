@@ -88,5 +88,20 @@ namespace KnowledgeTracker.Data.Implementations
             );
             return result ?? Enumerable.Empty<KnowledgeEntry>();
         }
+
+        public Task RemoveAttachmentAsync(int attachmentId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<AttachmentInfo>> GetAttachmentsAsync(int entryId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddAttachmentAsync(int entryId, AttachmentInfo attachment)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

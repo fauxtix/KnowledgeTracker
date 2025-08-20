@@ -5,6 +5,21 @@
         public App()
         {
             InitializeComponent();
+
+            var theme = Preferences.Default.Get("AppTheme", "Light");
+            if (theme == "Dark")
+            {
+                Resources.MergedDictionaries.Clear();
+                Resources.MergedDictionaries.Add(new Resources.Themes.DarkTheme());
+                UserAppTheme = AppTheme.Dark;
+            }
+            else
+            {
+                Resources.MergedDictionaries.Clear();
+                Resources.MergedDictionaries.Add(new Resources.Themes.LightTheme());
+                UserAppTheme = AppTheme.Light;
+            }
+
             MainPage = ServiceHelper.GetService<MainPage>() ?? new MainPage(null);
         }
 

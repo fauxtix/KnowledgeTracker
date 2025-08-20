@@ -29,5 +29,20 @@ namespace KnowledgeTracker.Services
 
             return await _repository.SearchAsync(searchTerm);
         }
+
+        public async Task RemoveAttachmentAsync(int attachmentId)
+        {
+            await _repository.RemoveAttachmentAsync(attachmentId);
+        }
+
+        public async Task<List<AttachmentInfo>> GetAttachmentsAsync(int entryId)
+        {
+            return await _repository.GetAttachmentsAsync(entryId);
+        }
+
+        public async Task AddAttachmentAsync(int entryId, AttachmentInfo attachment)
+        {
+            await _repository.AddAttachmentAsync(entryId, attachment);
+        }
     }
 }
