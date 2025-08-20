@@ -36,7 +36,12 @@ namespace KnowledgeTracker.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is DateTime dt)
+            {
+                // Treat MinValue or very old dates as "empty"
+                if (dt == DateTime.MinValue || dt.Year < 1900)
+                    return DateTime.Today;
                 return dt;
+            }
             return DateTime.Today;  // valor padrão quando null
         }
 

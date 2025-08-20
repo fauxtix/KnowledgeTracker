@@ -212,6 +212,8 @@ namespace KnowledgeTracker.ViewModels
         public void NewEntry()
         {
             SelectedEntry = new KnowledgeEntry();
+            SelectedEntry.DateResolved = DateTime.Today;
+            SyncFieldsFromSelectedEntry();
         }
 
         [RelayCommand]
@@ -398,7 +400,6 @@ namespace KnowledgeTracker.ViewModels
 
             if (DeviceInfo.Platform == DevicePlatform.WinUI)
             {
-                // Pass type and duration (in seconds)
                 Application.Current?.MainPage?.ShowPopup(
                     new Components.ToastPopup(
                         toastMessage,
