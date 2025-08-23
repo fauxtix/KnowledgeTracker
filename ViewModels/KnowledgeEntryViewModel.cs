@@ -445,12 +445,12 @@ namespace KnowledgeTracker.ViewModels
         public async Task AddAttachmentAsync()
         {
             var customFileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
-    {
-        { DevicePlatform.WinUI, new[] { ".pdf", ".jpg", ".jpeg", ".png", ".txt" } },
-        { DevicePlatform.Android, new[] { "application/pdf", "image/jpeg", "image/png", "text/plain" } },
-        { DevicePlatform.iOS, new[] { "com.adobe.pdf", "public.jpeg", "public.png", "plain-text" } },
-        { DevicePlatform.MacCatalyst, new[] { "com.adobe.pdf", "public.jpeg", "public.png", "ublic.plain-text" } }
-    });
+            {
+                { DevicePlatform.WinUI, new[] { ".pdf", ".jpg", ".jpeg", ".png", ".txt" } },
+                { DevicePlatform.Android, new[] { "application/pdf", "image/jpeg", "image/png", "text/plain" } },
+                { DevicePlatform.iOS, new[] { "com.adobe.pdf", "public.jpeg", "public.png", "plain-text" } },
+                { DevicePlatform.MacCatalyst, new[] { "com.adobe.pdf", "public.jpeg", "public.png", "public.plain-text" } }
+            });
 
             var result = await FilePicker.Default.PickAsync(new PickOptions
             {
