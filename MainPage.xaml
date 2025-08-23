@@ -107,11 +107,11 @@
                     <Label Text="Nome do Projeto" FontAttributes="Bold" TextColor="{DynamicResource LabelTextColor}" />
                     <Entry Text="{Binding SelectedEntry.ProjectName}" Style="{StaticResource EntryStyle}" Placeholder="Nome do projeto..." />
 
-                    <Label Text="Tecnologias" FontAttributes="Bold" TextColor="{DynamicResource LabelTextColor}" />
+                    <!--<Label Text="Tecnologias" FontAttributes="Bold" TextColor="{DynamicResource LabelTextColor}" />
                     <Entry Text="{Binding SelectedEntry.Technologies}" Style="{StaticResource EntryStyle}" Placeholder="Tecnologias utilizadas..." />
 
                     <Label Text="Tags" FontAttributes="Bold" TextColor="{DynamicResource LabelTextColor}" />
-                    <Entry Text="{Binding SelectedEntry.Tags}" Style="{StaticResource EntryStyle}" Placeholder="Tags separadas por vírgula..." />
+                    <Entry Text="{Binding SelectedEntry.Tags}" Style="{StaticResource EntryStyle}" Placeholder="Tags separadas por vírgula..." />-->
 
                     <Label Text="URL do vídeo do YouTube:" TextColor="{DynamicResource AccentColor}" />
                     <Entry Text="{Binding SelectedEntry.YouTubeUrl}" 
@@ -146,21 +146,37 @@
                                  TextColor="{DynamicResource DatePickerTextColor}"
                                  BackgroundColor="{DynamicResource DatePickerBackgroundColor}" />
 
-                    <!-- ... other UI code ... -->
-
                     <Label Text="Anexos" FontAttributes="Bold" TextColor="{DynamicResource LabelTextColor}" />
-                    <CollectionView ItemsSource="{Binding SelectedEntry.Attachments}" Margin="0,10,0,0">
+                    <CollectionView ItemsSource="{Binding Attachments}" Margin="0,10,0,0" >
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="4" />
+                        </CollectionView.ItemsLayout>
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <HorizontalStackLayout Spacing="10">
-                                    <Label Text="{Binding FileName}" VerticalOptions="Center" />
-                                    <Button Text="Abrir"
-                        Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenAttachmentCommand}"
-                        CommandParameter="{Binding .}" />
-                                    <Button Text="Remover"
-                        Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.RemoveAttachmentCommand}"
-                        CommandParameter="{Binding .}" />
-                                </HorizontalStackLayout>
+                                <Frame Padding="8"   Margin="0, 12, 0, 12"
+                                       CornerRadius="8" HasShadow="True" BackgroundColor="{DynamicResource FrameBackgroundColor}">
+                                    <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                                        <Label Text="{Binding FileName}" TextColor="{DynamicResource LabelTextColor}" VerticalOptions="Center" FontAttributes="Bold" />
+                                        <Button Text="Abrir"
+                                                Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenAttachmentCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="SteelBlue"
+                                                TextColor="White"
+                                                CornerRadius="6"
+                                                Padding="8,0"                                                 
+                                                FontAttributes="Bold" WidthRequest="48" HeightRequest="48"
+                                                ImageSource="open_file.png" />
+                                        <Button Text="Remover"
+                                                Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.RemoveAttachmentCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="IndianRed"
+                                                TextColor="White" WidthRequest="48" HeightRequest="48"
+                                                CornerRadius="6"
+                                                Padding="8,0"
+                                                FontAttributes="Bold"
+                                                ImageSource="delete.png" />
+                                    </HorizontalStackLayout>
+                                </Frame>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
@@ -198,6 +214,16 @@
                         ImageSource="delete.png"
                         ContentLayout="Left,10" />
             </HorizontalStackLayout>
+            <ActivityIndicator
+                     IsRunning="{Binding IsBusy}"
+                     IsVisible="{Binding IsBusy}"
+                     Color="{DynamicResource AccentColor}"
+                     VerticalOptions="Center"
+                     HorizontalOptions="Center"
+                     WidthRequest="64"
+                     HeightRequest="64"
+                     ZIndex="100" />
+
         </Grid>
     </Grid>
 </ContentPage>

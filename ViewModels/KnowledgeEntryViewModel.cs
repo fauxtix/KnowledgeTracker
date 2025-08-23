@@ -78,9 +78,11 @@ namespace KnowledgeTracker.ViewModels
         [ObservableProperty]
         private bool isYouTubeVisible;
 
-        // MVVM Toolkit: Attachments property for UI binding
         [ObservableProperty]
         private ObservableCollection<AttachmentInfo> attachments = new();
+
+        [ObservableProperty]
+        private bool isBusy;
 
         private KnowledgeEntry? selectedEntry;
         public KnowledgeEntry? SelectedEntry
@@ -103,7 +105,6 @@ namespace KnowledgeTracker.ViewModels
                         Comments = selectedEntry.Comments;
                         YouTubeUrl = selectedEntry.YouTubeUrl;
 
-                        // Sync Attachments for UI binding
                         Attachments = new ObservableCollection<AttachmentInfo>(selectedEntry.Attachments ?? new List<AttachmentInfo>());
                     }
                     else
@@ -116,6 +117,7 @@ namespace KnowledgeTracker.ViewModels
                 }
             }
         }
+
         private void ClearFields()
         {
             Id = 0;
@@ -157,9 +159,18 @@ namespace KnowledgeTracker.ViewModels
         [RelayCommand]
         public async Task LoadAllAsync()
         {
-            var list = await _service.GetAllAsync();
-            Entries = new ObservableCollection<KnowledgeEntry>(list);
+            IsBusy = true;
+            try
+            {
+                var list = await _service.GetAllAsync();
+                Entries = new ObservableCollection<KnowledgeEntry>(list);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
+
 
         [RelayCommand]
         public async Task LoadByIdAsync(int id)
@@ -183,14 +194,12 @@ namespace KnowledgeTracker.ViewModels
             newEntry.Id = newId;
             Entries.Add(newEntry);
 
-            // Now save attachments with the correct FK
-            if (Attachments.Count > 0)
+            // Save attachments for the new entry
+            foreach (var attachment in Attachments)
             {
-                foreach (var attachment in Attachments)
-                {
-                    attachment.KnowledgeEntryId = newId;
-                    await _service.AddAttachmentAsync(newId, attachment);
-                }
+                attachment.KnowledgeEntryId = newId;
+                await _service.AddAttachmentAsync(newId, attachment);
+                // File is already present on disk (created when picked)
             }
 
             SelectedEntry = new KnowledgeEntry();
@@ -199,33 +208,37 @@ namespace KnowledgeTracker.ViewModels
             await ShowNotificationAsync("Sucesso", "Entrada criada com sucesso!", NotificationType.Info);
         }
 
+
         [RelayCommand]
         public async Task UpdateAsync()
         {
             if (Id == 0) return;
-
             if (!ValidateSelectedEntry())
                 return;
 
             var updatedEntry = CreateEntryFromFields();
             await _service.UpdateAsync(updatedEntry);
 
-            // Update attachments: remove all and re-add current list
-            var existingAttachments = await _service.GetAttachmentsAsync(updatedEntry.Id);
-            foreach (var attachment in existingAttachments)
+            // Get persisted and current attachments
+            var persistedAttachments = await _service.GetAttachmentsAsync(updatedEntry.Id);
+            var currentAttachments = Attachments.ToList();
+
+            // Delete removed attachments (from DB and disk)
+            var removed = persistedAttachments.Where(pa => !currentAttachments.Any(ca => ca.FilePath == pa.FilePath)).ToList();
+            foreach (var attachment in removed)
             {
                 await _service.RemoveAttachmentAsync(attachment.Id);
                 if (File.Exists(attachment.FilePath))
                     File.Delete(attachment.FilePath);
             }
 
-            if (Attachments.Count > 0)
+            // Add new attachments (to DB)
+            var added = currentAttachments.Where(ca => !persistedAttachments.Any(pa => pa.FilePath == ca.FilePath)).ToList();
+            foreach (var attachment in added)
             {
-                foreach (var attachment in Attachments)
-                {
-                    attachment.KnowledgeEntryId = updatedEntry.Id;
-                    await _service.AddAttachmentAsync(updatedEntry.Id, attachment);
-                }
+                attachment.KnowledgeEntryId = updatedEntry.Id;
+                await _service.AddAttachmentAsync(updatedEntry.Id, attachment);
+                // File is already present on disk (created when picked)
             }
 
             await LoadAllAsync();
@@ -237,6 +250,24 @@ namespace KnowledgeTracker.ViewModels
         public async Task DeleteAsync()
         {
             if (Id == 0) return;
+
+            // Fix CS8602: Check for null before dereferencing Application.Current or MainPage
+            if (Application.Current?.MainPage == null)
+            {
+                await ShowNotificationAsync("Erro", "Não foi possível exibir a caixa de diálogo.", NotificationType.Error, ToastDuration.Long);
+                return;
+            }
+
+            // Fix IDE0059: Remove unnecessary assignment of 'confirm' if not used
+            bool confirm = await Application.Current.MainPage.DisplayAlert(
+                "Confirmação",
+                $"Deseja realmente excluir a entrada '{Title}' e os seus anexos?",
+                "Excluir",
+                "Cancelar"
+            );
+
+            if (!confirm)
+                return;
 
             // Remove all attachments for this entry
             var attachments = await _service.GetAttachmentsAsync(Id);
@@ -413,21 +444,30 @@ namespace KnowledgeTracker.ViewModels
         [RelayCommand]
         public async Task AddAttachmentAsync()
         {
+            var customFileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+    {
+        { DevicePlatform.WinUI, new[] { ".pdf", ".jpg", ".jpeg", ".png", ".txt" } },
+        { DevicePlatform.Android, new[] { "application/pdf", "image/jpeg", "image/png", "text/plain" } },
+        { DevicePlatform.iOS, new[] { "com.adobe.pdf", "public.jpeg", "public.png", "plain-text" } },
+        { DevicePlatform.MacCatalyst, new[] { "com.adobe.pdf", "public.jpeg", "public.png", "ublic.plain-text" } }
+    });
+
             var result = await FilePicker.Default.PickAsync(new PickOptions
             {
-                PickerTitle = "Selecione um arquivo para anexar"
+                PickerTitle = "Selecione um arquivo PDF, imagem ou textto",
+                FileTypes = customFileType
             });
 
             if (result == null || string.IsNullOrWhiteSpace(result.FileName))
             {
-                await ShowNotificationAsync("Erro", "Nenhum arquivo selecionado.", NotificationType.Error);
+                await ShowNotificationAsync("Erro", "Nenhum arquivo selecionado.", NotificationType.Error, ToastDuration.Long);
                 return;
             }
 
             var fileName = Path.GetFileName(result.FileName);
             if (string.IsNullOrWhiteSpace(fileName) || fileName == "..." || fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
             {
-                await ShowNotificationAsync("Erro", "Nome de arquivo inválido.", NotificationType.Error);
+                await ShowNotificationAsync("Erro", "Nome de arquivo inválido.", NotificationType.Error, ToastDuration.Long);
                 return;
             }
 
@@ -446,7 +486,7 @@ namespace KnowledgeTracker.ViewModels
             }
             catch (Exception ex)
             {
-                await ShowNotificationAsync("Erro", $"Falha ao salvar o arquivo: {ex.Message}", NotificationType.Error);
+                await ShowNotificationAsync("Erro", $"Falha ao salvar o arquivo: {ex.Message}", NotificationType.Error, ToastDuration.Long);
                 return;
             }
 
@@ -458,15 +498,32 @@ namespace KnowledgeTracker.ViewModels
                 KnowledgeEntryId = 0 // Not set yet!
             };
 
-            Attachments.Add(attachment);
-            SelectedEntry?.Attachments.Add(attachment);
-        }
+            if (SelectedEntry.Attachments == null)
+                SelectedEntry.Attachments = new List<AttachmentInfo>();
 
+            SelectedEntry.Attachments.Add(attachment);
+            Attachments.Add(attachment);
+        }
         [RelayCommand]
         public async Task OpenAttachmentAsync(AttachmentInfo attachment)
         {
-            if (attachment != null && File.Exists(attachment.FilePath))
-                await Launcher.OpenAsync(new OpenFileRequest { File = new ReadOnlyFile(attachment.FilePath) });
+            IsBusy = true;
+            try
+            {
+                if (attachment != null && File.Exists(attachment.FilePath))
+                    await Launcher.OpenAsync(new OpenFileRequest { File = new ReadOnlyFile(attachment.FilePath) });
+                else
+                    await ShowNotificationAsync("Erro", "Problema na abertura do ficheiro....", NotificationType.Error, ToastDuration.Long);
+
+            }
+            catch (Exception)
+            {
+                await ShowNotificationAsync("Erro", "Não foi possível abrir o ficheiro.", NotificationType.Error, ToastDuration.Long);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         [RelayCommand]
@@ -477,6 +534,17 @@ namespace KnowledgeTracker.ViewModels
                 await _service.RemoveAttachmentAsync(attachment.Id);
                 Attachments.Remove(attachment);
                 SelectedEntry.Attachments.Remove(attachment);
+                if (!string.IsNullOrWhiteSpace(attachment.FilePath) && File.Exists(attachment.FilePath))
+                {
+                    try
+                    {
+                        File.Delete(attachment.FilePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        await ShowNotificationAsync("Erro", $"Falha ao remover o arquivo: {ex.Message}", NotificationType.Error, ToastDuration.Long);
+                    }
+                }
             }
         }
 
