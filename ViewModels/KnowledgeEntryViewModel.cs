@@ -534,7 +534,8 @@ namespace KnowledgeTracker.ViewModels
                 await _service.RemoveAttachmentAsync(attachment.Id);
                 Attachments.Remove(attachment);
                 SelectedEntry.Attachments.Remove(attachment);
-                if (!string.IsNullOrWhiteSpace(attachment.FilePath) && File.Exists(attachment.FilePath))
+                if (!string.IsNullOrWhiteSpace(attachment.FilePath) &&
+                    File.Exists(attachment.FilePath))
                 {
                     try
                     {
