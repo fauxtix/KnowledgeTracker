@@ -3,6 +3,7 @@ using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using KnowledgeTracker.Data.Helpers;
 using KnowledgeTracker.Data.Interfaces;
 using KnowledgeTracker.Models;
 using System.Collections.ObjectModel;
@@ -14,6 +15,8 @@ namespace KnowledgeTracker.ViewModels
     {
         private readonly IKnowledgeEntryService _service;
 
+        // Fix for CS8604: Ensure SelectedEntry is not null before passing to ChangeTracker<KnowledgeEntry> constructor
+
         public KnowledgeEntryViewModel(IKnowledgeEntryService service)
         {
             _service = service;
@@ -22,8 +25,11 @@ namespace KnowledgeTracker.ViewModels
             SelectedEntry = new KnowledgeEntry();
             SelectedEntry.DateResolved = DateTime.Today;
             Attachments = new ObservableCollection<AttachmentInfo>();
+            IsDirty = false;
+            entryTracker = SelectedEntry != null ? new ChangeTracker<KnowledgeEntry>(SelectedEntry) : null;
         }
 
+        public ChangeTracker<KnowledgeEntry>? entryTracker;
         public Action<string, string>? ShowMessage { get; set; }
         public string ThemeSwitchIcon => Application.Current?.UserAppTheme == AppTheme.Dark ? "sun.png" : "moon.png";
         public string? FirstValidationError => ValidationErrors.Count > 0 ? ValidationErrors[0] : null;
@@ -84,7 +90,12 @@ namespace KnowledgeTracker.ViewModels
         [ObservableProperty]
         private bool isBusy;
 
+        [ObservableProperty]
+        private bool isDirty;
+
         private KnowledgeEntry? selectedEntry;
+        // ... elsewhere in the file, replace similar usages:
+
         public KnowledgeEntry? SelectedEntry
         {
             get => selectedEntry;
@@ -106,11 +117,15 @@ namespace KnowledgeTracker.ViewModels
                         YouTubeUrl = selectedEntry.YouTubeUrl;
 
                         Attachments = new ObservableCollection<AttachmentInfo>(selectedEntry.Attachments ?? new List<AttachmentInfo>());
+
+                        entryTracker = selectedEntry != null ? new ChangeTracker<KnowledgeEntry>(selectedEntry) : null;
+
                     }
                     else
                     {
                         ClearFields();
                         Attachments = new ObservableCollection<AttachmentInfo>();
+                        entryTracker = null;
                     }
                     IsYouTubeVisible = false;
                     YouTubeHtmlSource = null;
@@ -118,43 +133,6 @@ namespace KnowledgeTracker.ViewModels
             }
         }
 
-        private void ClearFields()
-        {
-            Id = 0;
-            Title = null;
-            Description = null;
-            DateResolved = DateTime.Today;
-            ProjectName = null;
-            ResolutionSteps = null;
-            Technologies = null;
-            Tags = null;
-            Comments = null;
-            YouTubeUrl = null;
-            YouTubeHtmlSource = null;
-            IsYouTubeVisible = false;
-
-            if (SelectedEntry != null)
-            {
-                SelectedEntry.YouTubeUrl = null;
-            }
-        }
-        private KnowledgeEntry CreateEntryFromFields()
-        {
-            return new KnowledgeEntry
-            {
-                Id = Id,
-                Title = Title ?? string.Empty,
-                Description = Description ?? string.Empty,
-                DateResolved = DateResolved ?? DateTime.Today,
-                ProjectName = ProjectName ?? string.Empty,
-                ResolutionSteps = ResolutionSteps ?? string.Empty,
-                Technologies = Technologies ?? string.Empty,
-                Tags = Tags ?? string.Empty,
-                Comments = Comments ?? string.Empty,
-                YouTubeUrl = SelectedEntry?.YouTubeUrl,
-                Attachments = Attachments.ToList()
-            };
-        }
 
         [RelayCommand]
         public async Task LoadAllAsync()
@@ -189,17 +167,17 @@ namespace KnowledgeTracker.ViewModels
             if (!ValidateSelectedEntry())
                 return;
 
+            IsDirty = true;
+
             var newEntry = CreateEntryFromFields();
             int newId = await _service.InsertAsync(newEntry);
             newEntry.Id = newId;
             Entries.Add(newEntry);
 
-            // Save attachments for the new entry
             foreach (var attachment in Attachments)
             {
                 attachment.KnowledgeEntryId = newId;
                 await _service.AddAttachmentAsync(newId, attachment);
-                // File is already present on disk (created when picked)
             }
 
             SelectedEntry = new KnowledgeEntry();
@@ -213,17 +191,24 @@ namespace KnowledgeTracker.ViewModels
         public async Task UpdateAsync()
         {
             if (Id == 0) return;
+
             if (!ValidateSelectedEntry())
                 return;
+
+            if (entryTracker == null || !entryTracker.IsDirty)
+            {
+                await ShowNotificationAsync("Aviso", "Nenhuma alteração detectada.", NotificationType.Warning);
+                return;
+            }
 
             var updatedEntry = CreateEntryFromFields();
             await _service.UpdateAsync(updatedEntry);
 
-            // Get persisted and current attachments
+            entryTracker.AcceptChanges();
+
             var persistedAttachments = await _service.GetAttachmentsAsync(updatedEntry.Id);
             var currentAttachments = Attachments.ToList();
 
-            // Delete removed attachments (from DB and disk)
             var removed = persistedAttachments.Where(pa => !currentAttachments.Any(ca => ca.FilePath == pa.FilePath)).ToList();
             foreach (var attachment in removed)
             {
@@ -232,17 +217,16 @@ namespace KnowledgeTracker.ViewModels
                     File.Delete(attachment.FilePath);
             }
 
-            // Add new attachments (to DB)
             var added = currentAttachments.Where(ca => !persistedAttachments.Any(pa => pa.FilePath == ca.FilePath)).ToList();
             foreach (var attachment in added)
             {
                 attachment.KnowledgeEntryId = updatedEntry.Id;
                 await _service.AddAttachmentAsync(updatedEntry.Id, attachment);
-                // File is already present on disk (created when picked)
             }
 
             await LoadAllAsync();
             SelectedEntry = updatedEntry;
+
             await ShowNotificationAsync("Sucesso", "Entrada atualizada com sucesso!", NotificationType.Info, ToastDuration.Short);
         }
 
@@ -251,17 +235,21 @@ namespace KnowledgeTracker.ViewModels
         {
             if (Id == 0) return;
 
-            // Fix CS8602: Check for null before dereferencing Application.Current or MainPage
             if (Application.Current?.MainPage == null)
             {
                 await ShowNotificationAsync("Erro", "Não foi possível exibir a caixa de diálogo.", NotificationType.Error, ToastDuration.Long);
                 return;
             }
 
-            // Fix IDE0059: Remove unnecessary assignment of 'confirm' if not used
+            string entryTitle = Title ?? "(sem título)";
+            bool hasAttachments = selectedEntry?.Attachments?.Count > 0;
+
+            string deleteCaption = $"Deseja realmente excluir a entrada '{entryTitle}'" +
+               (hasAttachments ? " e os seus anexos?" : "?");
+
             bool confirm = await Application.Current.MainPage.DisplayAlert(
                 "Confirmação",
-                $"Deseja realmente excluir a entrada '{Title}' e os seus anexos?",
+                deleteCaption,
                 "Excluir",
                 "Cancelar"
             );
@@ -269,7 +257,6 @@ namespace KnowledgeTracker.ViewModels
             if (!confirm)
                 return;
 
-            // Remove all attachments for this entry
             var attachments = await _service.GetAttachmentsAsync(Id);
             foreach (var attachment in attachments)
             {
@@ -284,14 +271,19 @@ namespace KnowledgeTracker.ViewModels
 
             SelectedEntry = new KnowledgeEntry();
             Attachments = new ObservableCollection<AttachmentInfo>();
+
             await ShowNotificationAsync("Sucesso", "Entrada removida com sucesso!", NotificationType.Info);
         }
+
         [RelayCommand]
         public void NewEntry()
         {
             SelectedEntry = new KnowledgeEntry();
             SelectedEntry.DateResolved = DateTime.Today;
             SyncFieldsFromSelectedEntry();
+
+            entryTracker = SelectedEntry != null ? new ChangeTracker<KnowledgeEntry>(SelectedEntry) : null;
+
             Attachments = new ObservableCollection<AttachmentInfo>();
         }
 
@@ -302,71 +294,10 @@ namespace KnowledgeTracker.ViewModels
             Entries = new ObservableCollection<KnowledgeEntry>(list);
         }
 
-        public bool ValidateSelectedEntry()
-        {
-            SyncFieldsFromSelectedEntry();
-            var entryToValidate = CreateEntryFromFields();
-
-            var errors = new List<string>();
-
-            var context = new ValidationContext(entryToValidate);
-            var results = new List<ValidationResult>();
-            bool isValid = Validator.TryValidateObject(entryToValidate, context, results, true);
-            if (!isValid)
-                errors.AddRange(results.Select(r => r.ErrorMessage ?? "Erro desconhecido"));
-
-            // Additional YouTube URL validation
-            if (!string.IsNullOrWhiteSpace(entryToValidate.YouTubeUrl) && !IsValidUrl(entryToValidate.YouTubeUrl))
-                errors.Add("A URL do YouTube é inválida.");
-
-            ValidationErrors.Clear();
-            foreach (var error in errors)
-                ValidationErrors.Add(error);
-
-            OnPropertyChanged(nameof(ValidationErrors));
-            OnPropertyChanged(nameof(HasValidationErrors));
-
-            return ValidationErrors.Count == 0;
-        }
-        private void ValidationErrors_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            OnPropertyChanged(nameof(HasValidationErrors));
-        }
-
-        public void Dispose()
-        {
-            ValidationErrors.CollectionChanged -= ValidationErrors_CollectionChanged;
-        }
-
-        private void SyncFieldsFromSelectedEntry()
-        {
-            if (SelectedEntry != null)
-            {
-                Id = SelectedEntry.Id;
-                Title = SelectedEntry.Title;
-                Description = SelectedEntry.Description;
-                DateResolved = SelectedEntry.DateResolved;
-                ProjectName = SelectedEntry.ProjectName;
-                ResolutionSteps = SelectedEntry.ResolutionSteps;
-                Technologies = SelectedEntry.Technologies;
-                Tags = SelectedEntry.Tags;
-                Comments = SelectedEntry.Comments;
-            }
-        }
-
         [RelayCommand]
         public void ClearValidationErrors()
         {
             ValidationErrors.Clear();
-        }
-
-        // --- URL Validation Helper ---
-        private bool IsValidUrl(string? url)
-        {
-            if (string.IsNullOrWhiteSpace(url))
-                return false;
-            return Uri.TryCreate(url, UriKind.Absolute, out var uriResult)
-                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
         }
 
         [RelayCommand]
@@ -404,13 +335,6 @@ namespace KnowledgeTracker.ViewModels
                     await ShowNotificationAsync("Aviso", "URL inválida do YouTube.", NotificationType.Warning);
                 return;
             }
-        }
-        private string? ExtractYouTubeId(string? url)
-        {
-            if (string.IsNullOrEmpty(url)) return null;
-            var regex = new System.Text.RegularExpressions.Regex(@"(?:youtu\.be/|youtube\.com/(?:watch\?v=|embed/|v/|shorts/))([^\s&?/]+)");
-            var match = regex.Match(url);
-            return match.Success ? match.Groups[1].Value : null;
         }
 
         [RelayCommand]
@@ -504,6 +428,7 @@ namespace KnowledgeTracker.ViewModels
             SelectedEntry.Attachments.Add(attachment);
             Attachments.Add(attachment);
         }
+
         [RelayCommand]
         public async Task OpenAttachmentAsync(AttachmentInfo attachment)
         {
@@ -601,6 +526,114 @@ namespace KnowledgeTracker.ViewModels
                 await toast.Show();
             }
         }
+
+        private KnowledgeEntry CreateEntryFromFields()
+        {
+            return new KnowledgeEntry
+            {
+                Id = Id,
+                Title = Title ?? string.Empty,
+                Description = Description ?? string.Empty,
+                DateResolved = DateResolved ?? DateTime.Today,
+                ProjectName = ProjectName ?? string.Empty,
+                ResolutionSteps = ResolutionSteps ?? string.Empty,
+                Technologies = Technologies ?? string.Empty,
+                Tags = Tags ?? string.Empty,
+                Comments = Comments ?? string.Empty,
+                YouTubeUrl = SelectedEntry?.YouTubeUrl,
+                Attachments = Attachments.ToList()
+            };
+        }
+
+        private void ClearFields()
+        {
+            Id = 0;
+            Title = null;
+            Description = null;
+            DateResolved = DateTime.Today;
+            ProjectName = null;
+            ResolutionSteps = null;
+            Technologies = null;
+            Tags = null;
+            Comments = null;
+            YouTubeUrl = null;
+            YouTubeHtmlSource = null;
+            IsYouTubeVisible = false;
+
+            if (SelectedEntry != null)
+            {
+                SelectedEntry.YouTubeUrl = null;
+            }
+        }
+
+        public bool ValidateSelectedEntry()
+        {
+            SyncFieldsFromSelectedEntry();
+            var entryToValidate = CreateEntryFromFields();
+
+            var errors = new List<string>();
+
+            var context = new ValidationContext(entryToValidate);
+            var results = new List<ValidationResult>();
+            bool isValid = Validator.TryValidateObject(entryToValidate, context, results, true);
+            if (!isValid)
+                errors.AddRange(results.Select(r => r.ErrorMessage ?? "Erro desconhecido"));
+
+            if (!string.IsNullOrWhiteSpace(entryToValidate.YouTubeUrl) && !IsValidUrl(entryToValidate.YouTubeUrl))
+                errors.Add("A URL do YouTube é inválida.");
+
+            ValidationErrors.Clear();
+            foreach (var error in errors)
+                ValidationErrors.Add(error);
+
+            OnPropertyChanged(nameof(ValidationErrors));
+            OnPropertyChanged(nameof(HasValidationErrors));
+
+            return ValidationErrors.Count == 0;
+        }
+        private void ValidationErrors_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(HasValidationErrors));
+        }
+
+        public void Dispose()
+        {
+            ValidationErrors.CollectionChanged -= ValidationErrors_CollectionChanged;
+        }
+
+        private void SyncFieldsFromSelectedEntry()
+        {
+            if (SelectedEntry != null)
+            {
+                Id = SelectedEntry.Id;
+                Title = SelectedEntry.Title;
+                Description = SelectedEntry.Description;
+                DateResolved = SelectedEntry.DateResolved;
+                ProjectName = SelectedEntry.ProjectName;
+                ResolutionSteps = SelectedEntry.ResolutionSteps;
+                Technologies = SelectedEntry.Technologies;
+                Tags = SelectedEntry.Tags;
+                Comments = SelectedEntry.Comments;
+            }
+        }
+
+        private bool IsValidUrl(string? url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                return false;
+            return Uri.TryCreate(url, UriKind.Absolute, out var uriResult)
+                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+        }
+
+        private string? ExtractYouTubeId(string? url)
+        {
+            if (string.IsNullOrEmpty(url)) return null;
+            var regex = new System.Text.RegularExpressions.Regex(@"(?:youtu\.be/|youtube\.com/(?:watch\?v=|embed/|v/|shorts/))([^\s&?/]+)");
+            var match = regex.Match(url);
+            return match.Success ? match.Groups[1].Value : null;
+        }
+
+
         public enum NotificationType
         {
             Info,
