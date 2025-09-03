@@ -1,6 +1,7 @@
 # KnowledgeTracker
 
-Uma aplicação para gestão de conhecimento, desenvolvida em .NET MAUI/Desktop (Windows e macOS). Organize, acompanhe e consulte soluções técnicas, excertos de código e notas de aprendizagem, com uma interface adaptável ao tema claro/escuro.
+Uma aplicação para gestão de conhecimento, desenvolvida em .NET MAUI/Desktop (Windows e macOS). Organize, acompanhe e consulte soluções técnicas, excertos de código e notas de aprendizagem para futura referenciação.
+Interface adaptável ao tema claro/escuro.
 
 
 ---
