@@ -1,6 +1,6 @@
 # KnowledgeTracker
 
-Um pequeno programa, que tem como principal objetivo, a 'gestão de conhecimento', desenvolvida em .NET MAUI/Desktop (Windows e macOS). 
+Um pequeno programa, que tem como principal objetivo, a 'gestão de conhecimento'; desenvolvido em .NET MAUI/Desktop (Windows e macOS), usando a linguagem C#. 
 
 Permite a orgnização, acompanhamento e consulte de soluções técnicas, excertos de código e notas de aprendizagem, para futura referenciação.
 
