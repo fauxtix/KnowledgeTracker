@@ -1,6 +1,10 @@
 # KnowledgeTracker
 
-Uma aplicação para gestão de conhecimento, desenvolvida em .NET MAUI, **exclusiva para computadores desktop** (Windows e macOS). Organize, acompanhe e consulte soluções técnicas, excertos de código e notas de aprendizagem, com uma interface adaptável ao tema claro/escuro.
+Um pequeno programa, que tem como principal objetivo, a 'gestão de conhecimento'; desenvolvido em .NET MAUI/Desktop (Windows e macOS), usando a linguagem C#. 
+
+Permite a orgnização, acompanhamento e consulta de soluções técnicas, excertos de código e notas de aprendizagem, para futura referenciação.
+
+Interface adaptável ao tema claro/escuro.
 
 
 ---
@@ -9,8 +13,7 @@ Uma aplicação para gestão de conhecimento, desenvolvida em .NET MAUI, **exclu
 
 - Adicionar, editar, eliminar e pesquisar
 - Alternância entre tema claro e escuro com ícone dinâmico (sol/lua)
-- **Visualização de vídeos do YouTube na aplicação:
- ** insira o URL de um vídeo e assista sem sair da aplicação, ou abra no navegador
+- Visualização de vídeos do YouTube na aplicação.
 - Validação e apresentação de erros
 - Estilos personalizáveis através de ficheiros XAML de temas
 
@@ -50,9 +53,17 @@ git clone https://github.com/fauxtix/KnowledgeTracker.git cd KnowledgeTracker
 
 - **Temas:** Edite `Resources/Themes/LightTheme.xaml` e `DarkTheme.xaml` para cores e estilos.
 - **Ícones:** Substitua `moon.png` e `sun.png` em `Resources/Images/` por ícones personalizados.
-- **Idiomas:** Adicione mais idiomas em `IdiomasSuportados` no ViewModel.
+- **Idiomas:** Adicione mais idiomas em `IdiomasSuportados` no ViewModel (funcionalidade em desenvolvimento...)
 
 ---
+
+## 📷 Screenshots
+
+<img width="1426" height="752" alt="MainPage_1" src="https://github.com/user-attachments/assets/01dbe263-4d01-4d91-9973-3c6468958d23" />
+<img width="1426" height="752" alt="MainPage_2" src="https://github.com/user-attachments/assets/cb7f5876-3802-4bd7-9a8f-3bc5ed779712" />
+<img width="1426" height="752" alt="MainPage_1_Ligth" src="https://github.com/user-attachments/assets/33f99a7d-feaf-4ade-a345-880305cf3a27" />
+<img width="1426" height="752" alt="MainPage_2_Ligth" src="https://github.com/user-attachments/assets/de66ee63-4376-45ed-856a-c78448d7afc6" />
+
 
 ## 🤝 Contribuição
 
