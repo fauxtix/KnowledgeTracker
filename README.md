@@ -53,6 +53,9 @@ git clone https://github.com/fauxtix/KnowledgeTracker.git cd KnowledgeTracker
 - **Idiomas:** Adicione mais idiomas em `IdiomasSuportados` no ViewModel.
 
 ---
+
+## 📷 Screenshots
+
 <img width="1426" height="752" alt="MainPage_1" src="https://github.com/user-attachments/assets/01dbe263-4d01-4d91-9973-3c6468958d23" />
 <img width="1426" height="752" alt="MainPage_2" src="https://github.com/user-attachments/assets/cb7f5876-3802-4bd7-9a8f-3bc5ed779712" />
 <img width="1426" height="752" alt="MainPage_1_Ligth" src="https://github.com/user-attachments/assets/33f99a7d-feaf-4ade-a345-880305cf3a27" />
