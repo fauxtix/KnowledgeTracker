@@ -17,6 +17,8 @@ Interface adaptável ao tema claro/escuro.
  1. insira o URL de um vídeo e assista sem sair da aplicação, ou abra no navegador
 - Validação e apresentação de erros
 - Estilos personalizáveis através de ficheiros XAML de temas
+- **Visualizar vídeos do YouTube:**
+  1. Cole o URL de um vídeo do YouTube no campo "URL do vídeo do YouTube".
 
 ---
 
