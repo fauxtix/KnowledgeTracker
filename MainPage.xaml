@@ -62,7 +62,7 @@
                            Margin="0,10,0,5"                                
                            HasShadow="True"
                            BackgroundColor="{DynamicResource FrameBackgroundColor}">
-                    <Label Text="{Binding Title}"
+                            <Label Text="{Binding Title}"
                             FontAttributes="Bold"
                             TextColor="{DynamicResource LabelTextColor}"
                             LineBreakMode="WordWrap"
@@ -98,8 +98,23 @@
         <Grid Grid.Row="2" Grid.Column="1" RowDefinitions="*,Auto" Margin="20, 0,20, 0">
             <ScrollView Grid.Row="0">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Título" FontAttributes="Bold" TextColor="{DynamicResource LabelTextColor}" />
-                    <Entry Text="{Binding SelectedEntry.Title}" Style="{StaticResource EntryStyle}" Placeholder="Digite o título..." />
+                    <Grid ColumnSpacing="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="8*" />
+                            <ColumnDefinition Width="2*" />
+                        </Grid.ColumnDefinitions>
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Título" FontAttributes="Bold" TextColor="{DynamicResource LabelTextColor}" />
+                            <Entry Text="{Binding SelectedEntry.Title}" Style="{StaticResource EntryStyle}" Placeholder="Digite o título..." />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center">
+                            <Label Text="Data da Resolução" FontAttributes="Bold" TextColor="{DynamicResource LabelTextColor}" />
+                            <DatePicker Date="{Binding SelectedEntry.DateResolved, Converter={StaticResource NullableDateTimeToDateTimeConverter}}" 
+                                        Format="dd/MM/yyyy"
+                                        TextColor="{DynamicResource DatePickerTextColor}"
+                                        BackgroundColor="{DynamicResource DatePickerBackgroundColor}" />
+                        </VerticalStackLayout>
+                    </Grid>
 
                     <Label Text="Descrição" FontAttributes="Bold" TextColor="{DynamicResource LabelTextColor}" />
                     <Editor Text="{Binding SelectedEntry.Description}" Style="{StaticResource EditorStyle}" Placeholder="Descrição detalhada..." />
@@ -121,11 +136,13 @@
                     <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
                         <Button Text="Exibir Vídeo"
                                 Command="{Binding ShowYouTubeVideoCommand}"
-                                Style="{StaticResource ButtonStyle}" />
+                                Style="{StaticResource ButtonStyle}"
+                                IsVisible="{Binding SelectedEntry.YouTubeUrl, Converter={StaticResource NullOrEmptyToBoolConverter}}" />
 
                         <Button Text="Ver no YouTube"
                                 Command="{Binding OpenYouTubeInBrowserCommand}"
-                                Style="{StaticResource ButtonStyle}" />
+                                Style="{StaticResource ButtonStyle}"
+                                IsVisible="{Binding SelectedEntry.YouTubeUrl, Converter={StaticResource NullOrEmptyToBoolConverter}}" />
                     </HorizontalStackLayout>
                     <WebView Source="{Binding YouTubeHtmlSource}"
                              IsVisible="{Binding IsYouTubeVisible}"
@@ -133,18 +150,43 @@
                              WidthRequest="400"
                              HorizontalOptions="Center"
                              VerticalOptions="Center" />
-
-                    <Label Text="Passos da Resolução" FontAttributes="Bold" TextColor="{DynamicResource LabelTextColor}" />
-                    <Editor Text="{Binding SelectedEntry.ResolutionSteps}" Style="{StaticResource CodeEditorStyle}" Placeholder="Cole ou digite o código/steps aqui..." />
+                    <toolkit:Expander x:Name="MyExpander" Padding="10" Margin="3" IsClippedToBounds="True">
+                        <toolkit:Expander.Header>
+                            <Grid HeightRequest="48">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Frame Grid.Column="0"
+                                       BorderColor="Black"
+                                       BackgroundColor="{DynamicResource ExpanderBackgroundColor}"
+                                       CornerRadius="10"
+                                       HeightRequest="64"
+                                       VerticalOptions="Center">
+                                    <Label Text="Passos de Resolução"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           TextColor="Black"
+                                           VerticalOptions="Center"
+                                           HorizontalOptions="Start"/>
+                                </Frame>
+                                <Image Grid.Column="1"
+                                       Source="{Binding IsExpanded, Source={x:Reference MyExpander}, Converter={StaticResource ExpanderArrowConverter}}"
+                                       HeightRequest="24"
+                                       WidthRequest="24"
+                                       VerticalOptions="Center"
+                                       Margin="8,0,0,0"/>
+                            </Grid>
+                        </toolkit:Expander.Header>
+                        <toolkit:Expander.Content>
+                            <VerticalStackLayout>
+                                <Editor Margin="0, 10, 0, 10" Text="{Binding SelectedEntry.ResolutionSteps}" Style="{StaticResource CodeEditorStyle}" Placeholder="Cole ou digite o código/steps aqui..." />
+                            </VerticalStackLayout>
+                        </toolkit:Expander.Content>
+                    </toolkit:Expander>
 
                     <Label Text="Notas" FontAttributes="Bold" TextColor="{DynamicResource LabelTextColor}" />
                     <Editor Text="{Binding SelectedEntry.Comments}" Style="{StaticResource CodeEditorStyle}" Placeholder="Comentários adicionais..." />
-
-                    <Label Text="Data da Resolução" FontAttributes="Bold" TextColor="{DynamicResource LabelTextColor}" />
-                    <DatePicker  Date="{Binding SelectedEntry.DateResolved, Converter={StaticResource NullableDateTimeToDateTimeConverter}}" 
-                                 Format="dd/MM/yyyy"
-                                 TextColor="{DynamicResource DatePickerTextColor}"
-                                 BackgroundColor="{DynamicResource DatePickerBackgroundColor}" />
 
                     <Label Text="Anexos" FontAttributes="Bold" TextColor="{DynamicResource LabelTextColor}" />
                     <CollectionView ItemsSource="{Binding Attachments}" Margin="0,10,0,0" >

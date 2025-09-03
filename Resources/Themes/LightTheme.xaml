@@ -8,7 +8,7 @@
     <Color x:Key="StackBackgroundColor">#F5F5F5</Color>
     <Color x:Key="FrameBackgroundColor">#E0E0E0</Color>
     <Color x:Key="LabelTextColor">Black</Color>
-    <Color x:Key="AccentColor">#50FA7B</Color>
+    <Color x:Key="AccentColor">#2196F3</Color>
     <Color x:Key="ErrorBackgroundColor">#FFCCCC</Color>
     <Color x:Key="ErrorTextColor">#181A20</Color>
     <Color x:Key="DatePickerBackgroundColor">#F5F5F5</Color>

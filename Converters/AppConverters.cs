@@ -2,18 +2,21 @@
 
 namespace KnowledgeTracker.Converters
 {
-    public class NullToBoolConverter : IValueConverter
+    public class NullOrEmptyToBoolConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-            => value != null;
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            return !string.IsNullOrEmpty(value as string);
+        }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            => throw new NotImplementedException();
+        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
     }
-
     public class GreaterThanZeroConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is int intValue)
             {
@@ -27,13 +30,13 @@ namespace KnowledgeTracker.Converters
             return false;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
             => throw new NotImplementedException();
     }
 
     public class NullableDateTimeToDateTimeConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is DateTime dt)
             {
@@ -45,9 +48,25 @@ namespace KnowledgeTracker.Converters
             return DateTime.Today;  // valor padrão quando null
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             return value;
+        }
+    }
+
+    public class ExpanderArrowConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            bool isExpanded = value is bool b && b;
+            // Use MauiImage markup for best compatibility
+            var fileName = isExpanded ? "arrow_up.png" : "arrow_down.png";
+            return ImageSource.FromFile(fileName);
+        }
+
+        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

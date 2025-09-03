@@ -5,7 +5,8 @@
              x:Class="KnowledgeTracker.App">
     <Application.Resources>
         <ResourceDictionary>
-            <local:NullToBoolConverter x:Key="NullToBoolConverter" />
+            <local:NullOrEmptyToBoolConverter x:Key="NullOrEmptyToBoolConverter" />
+            <local:ExpanderArrowConverter x:Key="ExpanderArrowConverter" />
             <local:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter" />
             <local:NullableDateTimeToDateTimeConverter x:Key="NullableDateTimeToDateTimeConverter" />
             <ResourceDictionary.MergedDictionaries>

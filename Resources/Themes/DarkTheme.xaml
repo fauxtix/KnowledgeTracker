@@ -7,7 +7,7 @@
     <Color x:Key="StackBackgroundColor">#36454F</Color>
     <Color x:Key="FrameBackgroundColor">#36454F</Color>
     <Color x:Key="LabelTextColor">#F8F8F2</Color>
-    <Color x:Key="AccentColor">#50FA7B</Color>
+    <Color x:Key="AccentColor">#2196F3</Color>
     <Color x:Key="ErrorBackgroundColor">#FF5555</Color>
     <Color x:Key="ErrorTextColor">#181A20</Color>
     <Color x:Key="DatePickerBackgroundColor">#23262F</Color>
