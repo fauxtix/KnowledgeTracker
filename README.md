@@ -53,7 +53,7 @@ git clone https://github.com/fauxtix/KnowledgeTracker.git cd KnowledgeTracker
 
 - **Temas:** Edite `Resources/Themes/LightTheme.xaml` e `DarkTheme.xaml` para cores e estilos.
 - **Ícones:** Substitua `moon.png` e `sun.png` em `Resources/Images/` por ícones personalizados.
-- **Idiomas:** Adicione mais idiomas em `IdiomasSuportados` no ViewModel.
+- **Idiomas:** Adicione mais idiomas em `IdiomasSuportados` no ViewModel. (em curso)
 
 ---
 
