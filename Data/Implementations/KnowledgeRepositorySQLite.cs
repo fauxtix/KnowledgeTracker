@@ -74,8 +74,5 @@ namespace KnowledgeTracker.Data.Implementations
         {
             await _db.DeleteAsync<AttachmentInfo>(attachmentId);
         }
-
-
-
     }
 }

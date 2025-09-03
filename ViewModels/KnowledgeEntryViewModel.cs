@@ -15,8 +15,6 @@ namespace KnowledgeTracker.ViewModels
     {
         private readonly IKnowledgeEntryService _service;
 
-        // Fix for CS8604: Ensure SelectedEntry is not null before passing to ChangeTracker<KnowledgeEntry> constructor
-
         public KnowledgeEntryViewModel(IKnowledgeEntryService service)
         {
             _service = service;

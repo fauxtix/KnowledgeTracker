@@ -11,7 +11,6 @@ namespace KnowledgeTracker.Components
             MessageLabel.Text = message;
             SetFrameColor(type);
 
-            // Use Dispatcher to start timer instead of Device.StartTimer
             Dispatcher.StartTimer(TimeSpan.FromSeconds(seconds), () =>
             {
                 Close();

@@ -24,8 +24,6 @@ namespace KnowledgeTracker
                     fonts.AddFont("CascadiaCode-Regular.ttf", "CodeFont");
                 });
 
-
-
             // Caminho para base de dados SQLite local
             string dbPath = Path.Combine(FileSystem.AppDataDirectory, "knowledge.db3");
 

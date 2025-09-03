@@ -40,12 +40,11 @@ namespace KnowledgeTracker.Converters
         {
             if (value is DateTime dt)
             {
-                // Treat MinValue or very old dates as "empty"
                 if (dt == DateTime.MinValue || dt.Year < 1900)
                     return DateTime.Today;
                 return dt;
             }
-            return DateTime.Today;  // valor padrão quando null
+            return DateTime.Today;
         }
 
         public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
@@ -59,7 +58,6 @@ namespace KnowledgeTracker.Converters
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             bool isExpanded = value is bool b && b;
-            // Use MauiImage markup for best compatibility
             var fileName = isExpanded ? "arrow_up.png" : "arrow_down.png";
             return ImageSource.FromFile(fileName);
         }

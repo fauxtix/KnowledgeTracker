@@ -26,7 +26,6 @@ namespace KnowledgeTracker.Models
         [Required(ErrorMessage = "Os passos para resolução são obrigatórios.")]
         public string ResolutionSteps { get; set; } = string.Empty;
 
-        // Outros campos opcionais
         public string Technologies { get; set; } = string.Empty;
         public string Tags { get; set; } = string.Empty;
         public string Comments { get; set; } = string.Empty;
