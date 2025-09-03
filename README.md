@@ -13,7 +13,7 @@ Interface adaptável ao tema claro/escuro.
 
 - Adicionar, editar, eliminar e pesquisar
 - Alternância entre tema claro e escuro com ícone dinâmico (sol/lua)
-- **Visualização de vídeos do YouTube na aplicação.**
+- Visualização de vídeos do YouTube na aplicação.
 - Validação e apresentação de erros
 - Estilos personalizáveis através de ficheiros XAML de temas
 
