@@ -13,12 +13,10 @@ Interface adaptável ao tema claro/escuro.
 
 - Adicionar, editar, eliminar e pesquisar
 - Alternância entre tema claro e escuro com ícone dinâmico (sol/lua)
-- ** Visualização de vídeos do YouTube na aplicação.**
- 1. insira o URL de um vídeo e assista sem sair da aplicação, ou abra no navegador
+- **Visualização de vídeos do YouTube na aplicação.**
+  1. insira o URL de um vídeo e assista sem sair da aplicação, ou abra no navegador.
 - Validação e apresentação de erros
 - Estilos personalizáveis através de ficheiros XAML de temas
-- **Visualizar vídeos do YouTube:**
-  1. Cole o URL de um vídeo do YouTube no campo "URL do vídeo do YouTube".
 
 ---
 
