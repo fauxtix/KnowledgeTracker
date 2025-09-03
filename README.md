@@ -2,7 +2,7 @@
 
 Um pequeno programa, que tem como principal objetivo, a 'gestão de conhecimento'; desenvolvido em .NET MAUI/Desktop (Windows e macOS), usando a linguagem C#. 
 
-Permite a orgnização, acompanhamento e consulte de soluções técnicas, excertos de código e notas de aprendizagem, para futura referenciação.
+Permite a orgnização, acompanhamento e consulta de soluções técnicas, excertos de código e notas de aprendizagem, para futura referenciação.
 
 Interface adaptável ao tema claro/escuro.
 
