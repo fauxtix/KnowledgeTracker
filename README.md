@@ -63,7 +63,8 @@ git clone https://github.com/fauxtix/KnowledgeTracker.git cd KnowledgeTracker
 <img width="1426" height="752" alt="MainPage_2" src="https://github.com/user-attachments/assets/cb7f5876-3802-4bd7-9a8f-3bc5ed779712" />
 <img width="1426" height="752" alt="MainPage_1_Ligth" src="https://github.com/user-attachments/assets/33f99a7d-feaf-4ade-a345-880305cf3a27" />
 <img width="1426" height="752" alt="MainPage_2_Ligth" src="https://github.com/user-attachments/assets/de66ee63-4376-45ed-856a-c78448d7afc6" />
-
+<img width="1426" height="752" alt="ViewErrors" src="https://github.com/user-attachments/assets/191132d2-2616-48cc-8161-eca6cd99332d" />
+<img width="1426" height="752" alt="DeleteConfirmation" src="https://github.com/user-attachments/assets/2f3923c6-ba46-4f37-9b10-6aca3cd0fc74" />
 
 ## 🤝 Contribuição
 
