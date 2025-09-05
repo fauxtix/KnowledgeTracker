@@ -376,7 +376,7 @@ namespace KnowledgeTracker.ViewModels
 
             var result = await FilePicker.Default.PickAsync(new PickOptions
             {
-                PickerTitle = "Selecione um arquivo PDF, imagem ou textto",
+                PickerTitle = "Selecione um arquivo PDF, imagem ou texto",
                 FileTypes = customFileType
             });
 
