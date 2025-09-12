@@ -125,9 +125,8 @@ namespace KnowledgeTracker.ViewModels
                         Attachments = new ObservableCollection<AttachmentInfo>();
                         entryTracker = null;
                     }
-                    IsYouTubeVisible = false;
-                    YouTubeHtmlSource = null;
-                }
+
+                    StopInternalVideo();                }
             }
         }
 
@@ -162,6 +161,8 @@ namespace KnowledgeTracker.ViewModels
         [RelayCommand]
         public async Task AddAsync()
         {
+            StopInternalVideo();
+
             if (!ValidateSelectedEntry())
                 return;
 
@@ -188,6 +189,8 @@ namespace KnowledgeTracker.ViewModels
         [RelayCommand]
         public async Task UpdateAsync()
         {
+
+            StopInternalVideo();
             if (Id == 0) return;
 
             if (!ValidateSelectedEntry())
@@ -231,6 +234,8 @@ namespace KnowledgeTracker.ViewModels
         [RelayCommand]
         public async Task DeleteAsync()
         {
+            StopInternalVideo();
+
             if (Id == 0) return;
 
             if (Application.Current?.MainPage == null)
@@ -276,6 +281,8 @@ namespace KnowledgeTracker.ViewModels
         [RelayCommand]
         public void NewEntry()
         {
+            StopInternalVideo();
+
             SelectedEntry = new KnowledgeEntry();
             SelectedEntry.DateResolved = DateTime.Today;
             SyncFieldsFromSelectedEntry();
@@ -288,6 +295,8 @@ namespace KnowledgeTracker.ViewModels
         [RelayCommand]
         public async Task SearchAsync(string searchTerm)
         {
+            StopInternalVideo();
+
             var list = await _service.SearchAsync(searchTerm ?? "");
             Entries = new ObservableCollection<KnowledgeEntry>(list);
         }
@@ -545,6 +554,8 @@ namespace KnowledgeTracker.ViewModels
 
         private void ClearFields()
         {
+            StopInternalVideo();
+
             Id = 0;
             Title = null;
             Description = null;
@@ -555,8 +566,6 @@ namespace KnowledgeTracker.ViewModels
             Tags = null;
             Comments = null;
             YouTubeUrl = null;
-            YouTubeHtmlSource = null;
-            IsYouTubeVisible = false;
 
             if (SelectedEntry != null)
             {
@@ -631,6 +640,14 @@ namespace KnowledgeTracker.ViewModels
             return match.Success ? match.Groups[1].Value : null;
         }
 
+        private void StopInternalVideo()
+        {
+            if (IsYouTubeVisible)
+            {
+                YouTubeHtmlSource = null;
+                IsYouTubeVisible = false;
+            }
+        }
 
         public enum NotificationType
         {
