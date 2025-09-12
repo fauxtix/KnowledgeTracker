@@ -642,13 +642,9 @@ namespace KnowledgeTracker.ViewModels
 
         private void StopInternalVideo()
         {
-            if (IsYouTubeVisible)
-            {
-                YouTubeHtmlSource = null;
-                IsYouTubeVisible = false;
-            }
+            YouTubeHtmlSource = new HtmlWebViewSource { Html = "<html></html>" };
+            IsYouTubeVisible = false;
         }
-
         public enum NotificationType
         {
             Info,
